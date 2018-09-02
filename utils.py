@@ -68,8 +68,8 @@ def calc_iou(bb1, bb2): #[left_top_x, left_top_y, right_bottom_x, right_bottom_y
 
 def nms(y, iou_thres): # y.shape: [N, 85], for one image only
     _, sort_idx = torch.sort(y[:, 1], descending=True)
-
     y = y[sort_idx]
+    print(y[:10])
     classes = torch.unique(y[:, 0])
     
     y_res = None
