@@ -10,13 +10,13 @@ python helpers.py --model yolov3 [or yolov3-tiny]
 
 Run the detector:
 
-```python detect.py --model yolov3-tiny --weight weights/y
+```
 python detect.py --model yolov3 --weight weights/yolov3.pth --image data/person.jpg --thres 0.5
 ```
 
 You will get prediction like this:
 
-[]()
+![](https://github.com/feixyz10/yolov3-pytorch/blob/master/data/person_prediction.jpg)
 
 ### Train
 
