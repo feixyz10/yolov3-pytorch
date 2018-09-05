@@ -9,7 +9,6 @@ def load_weights(model, weightfile):
 
     pos = 0
     for name, child in model.named_children():
-        print(name)
         if 'resblock' in name:
             child = list(child.module_list)
         else:
@@ -45,14 +44,20 @@ def save_weight_to_pytorch_statedict(model, weightfile, savefile):
     torch.save(model.state_dict(), savefile)
 
 
-# if __name__ == '__main__':
-#     yolo3 = Yolo3Tiny()
-#     weightfile = 'weights/yolov3-tiny.weights'
-#     savefile = 'weights/yolov3_tiny.pth'
-#     save_weight_to_pytorch_statedict(yolo3, weightfile, savefile)
-
 if __name__ == '__main__':
-    yolo3 = Yolo3()
-    weightfile = 'weights/yolov3.weights'
-    savefile = 'weights/yolov3.pth'
+    import argparse
+    parser = argparse.ArgumentParser(description='convert weights')
+    parser.add_argument('--model', default='yolov3', type=str)
+    args = parser.parse_args()
+    assert args.model == 'yolov3' or args.model == 'yolov3-tiny', "Only 'yolov3' and 'yolov3-tiny are available now!"
+
+    if args.model == 'yolov3':
+        yolo3 = Yolo3()
+        weightfile = 'weights/yolov3.weights'
+        savefile = 'weights/yolov3.pth'
+    elif args.model == 'yolov3-tiny':
+        yolo3 = Yolo3Tiny()
+        weightfile = 'weights/yolov3-tiny.weights'
+        savefile = 'weights/yolov3_tiny.pth'
+
     save_weight_to_pytorch_statedict(yolo3, weightfile, savefile)

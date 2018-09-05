@@ -52,6 +52,9 @@ def preproc_before_nms(y, dim=416, thres=0.5): # y.shape: [N, 85], for one image
     y = torch.cat([max_conf_idx, max_conf, left_top_x, left_top_y, right_bot_x, right_bot_y], 1)
     mask = y[:, 1] > thres
 
+    # y_, _ = torch.sort(y[:, 1], descending=True)
+    # print(y_[:10])
+
     return y[mask]
 
 def calc_iou(bb1, bb2): #[left_top_x, left_top_y, right_bottom_x, right_bottom_y], bb1.shape: [1, 4], bb2.shape: [N, 4]
@@ -69,7 +72,6 @@ def calc_iou(bb1, bb2): #[left_top_x, left_top_y, right_bottom_x, right_bottom_y
 def nms(y, iou_thres): # y.shape: [N, 85], for one image only
     _, sort_idx = torch.sort(y[:, 1], descending=True)
     y = y[sort_idx]
-    print(y[:10])
     classes = torch.unique(y[:, 0])
     
     y_res = None
@@ -100,7 +102,7 @@ def choose_color(idx, num=80):
             color.append( min(int(idx * 255 / (base - 1)), 255) )
         else:
             color.append(0)
-        idx -= 27
+        idx -= base
     
     return tuple(color)
 
