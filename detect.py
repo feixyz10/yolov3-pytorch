@@ -7,7 +7,7 @@ import argparse
 parser = argparse.ArgumentParser(description="Yolov3")
 parser.add_argument('--model', default='yolov3', type=str)
 parser.add_argument('--weight', default='weights/yolov3.pth', type=str)
-parser.add_argument('--image', default='data/horses.jpg', type=str)
+parser.add_argument('--image', default='data/kite.jpg', type=str)
 parser.add_argument('--thres', default=0.5, type=float)
 args = parser.parse_args()
 
@@ -41,7 +41,7 @@ except:
 
 cls_names = [x for x in open('coco.names.txt', 'r').read().split('\n') if len(x) > 0]
 
-print('%d objects are detected.'%pred.size(0))
+print('%d objects are detected.'%len(pred))
 for p in pred:
     name = cls_names[int(p[0])]
     conf = int(p[1] * 100)
