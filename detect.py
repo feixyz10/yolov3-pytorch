@@ -7,7 +7,7 @@ import argparse
 parser = argparse.ArgumentParser(description="Yolov3")
 parser.add_argument('--model', default='yolov3', type=str)
 parser.add_argument('--weight', default='weights/yolov3.pth', type=str)
-parser.add_argument('--image', default='data/kite.jpg', type=str)
+parser.add_argument('--image', default='data/street.jpg', type=str)
 parser.add_argument('--thres', default=0.5, type=float)
 args = parser.parse_args()
 
