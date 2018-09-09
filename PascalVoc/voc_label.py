@@ -14,8 +14,8 @@ def convert(size, box):
     dh = 1./size[1]
     x = (box[0] + box[1])/2.0
     y = (box[2] + box[3])/2.0
-    w = box[1] - box[0]
-    h = box[3] - box[2]
+    w = box[1] - box[0] + 1
+    h = box[3] - box[2] + 1
     x = x*dw
     w = w*dw
     y = y*dh
@@ -38,8 +38,9 @@ def convert_annotation(year, image_id):
             continue
         cls_id = classes.index(cls)
         xmlbox = obj.find('bndbox')
-        b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
-        bb = convert((w,h), b)
+        # b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+        # bb = convert((w,h), b)
+        bb = (float(xmlbox.find('xmin').text), float(xmlbox.find('ymin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymax').text))
         out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
 
 wd = getcwd()

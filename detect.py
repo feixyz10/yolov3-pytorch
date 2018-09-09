@@ -1,4 +1,4 @@
-from utils import *
+from utils_detect import *
 from models import Yolo3Tiny, Yolo3
 import cv2
 import torch
@@ -13,8 +13,8 @@ args = parser.parse_args()
 
 assert args.model == 'yolov3' or args.model == 'yolov3-tiny', "Only 'yolov3' and 'yolov3-tiny are available now!"
 
-anchors1 = [[[10,13],  [16,30],  [33,23]],  [[30,61],  [62,45],  [59,119]],  [[116,90],  [156,198],  [373,326]]]  # yolov3
-anchors2 = [[[10,14],  [23,27],  [37,58]],  [[81,82],  [135,169],  [344,319]]] # yolov3-tiny
+anchors1 = [ [[116,90], [156,198], [373,326]],  [[30,61], [62,45], [59,119]],  [[10,13], [16,30], [33,23]] ]  # yolov3
+anchors2 = [ [[81,82], [135,169], [344,319]],  [[10,14], [23,27], [37,58]] ] # yolov3-tiny
 if args.model == 'yolov3':
     yolo3 = Yolo3(anchors1)
 elif args.model == 'yolov3-tiny':
@@ -29,7 +29,7 @@ img = torch.FloatTensor(img).unsqueeze(0)
 yolo3.train(False)
 y = yolo3(img)
 
-y = [transform_predictions(y_, yolo3.anchors[len(y)-1-i], 416) for i, y_ in enumerate(y)]
+y = [transform_predictions(y_, yolo3.anchors[i], 416) for i, y_ in enumerate(y)]
 # y = [y[0]]
 
 y = torch.cat(y, 1).squeeze_(0)

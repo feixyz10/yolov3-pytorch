@@ -18,7 +18,7 @@ def transform_predictions(y, anchors, inp_dim): # y.shape: [B, 255, grid, grid]
     y = transform_dimensions(y, num_anchors) # y.shape: [B, N, 85]
     bb_size = y.size(1)
 
-    idx = np.arange(bb_size) // 3
+    idx = np.arange(bb_size) // len(anchors)
     y_idx = (idx // grid_size).astype(np.float32)
     x_idx = (idx % grid_size).astype(np.float32)
 

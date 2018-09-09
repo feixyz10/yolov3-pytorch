@@ -43,8 +43,10 @@ class ResBlock(nn.Module):
 
 
 class Yolo3(nn.Module):
-    def __init__(self, anchors=None):
+    def __init__(self, anchors=None, classes=80):
         super(__class__, self).__init__()
+
+        predict_channel = 3 * (classes + 5)
 
         self.anchors = anchors
         self.bb_convlayer_1 = ConvLayer(3, 32, pool=False)   # bb: backbone
@@ -61,7 +63,7 @@ class Yolo3(nn.Module):
         self.bb_convlayer_6 = ConvLayer(1024, 512, 1, pad=0, pool=False) # branch to dt1 and dt2
 
         self.dt1_convlayer_1 = ConvLayer(512, 1024, pool=False)
-        self.detector1 = ConvLayer(1024, 255, 1, pad=0, bn=False, act=False, pool=False)
+        self.detector1 = ConvLayer(1024, predict_channel, 1, pad=0, bn=False, act=False, pool=False)
 
         self.bb_convlayer_7 = ConvLayer(512, 256, 1, pad=0, pool=False)  # followed by upsample and then concat 
         self.bb_convlayer_8 = ConvLayer(768, 256, 1, pad=0, pool=False)
@@ -71,7 +73,7 @@ class Yolo3(nn.Module):
         self.bb_convlayer_12 = ConvLayer(512, 256, 1, pad=0, pool=False) # branch to dt2 and dt3
         
         self.dt2_convlayer_1 = ConvLayer(256, 512, pool=False)
-        self.detector2 = ConvLayer(512, 255, 1, pad=0, bn=False, act=False, pool=False)
+        self.detector2 = ConvLayer(512, predict_channel, 1, pad=0, bn=False, act=False, pool=False)
 
         self.bb_convlayer_13 = ConvLayer(256, 128, 1, pad=0, pool=False)  # followed by upsample and then concat 
         self.bb_convlayer_14 = ConvLayer(384, 128, 1, pad=0, pool=False)
@@ -81,7 +83,7 @@ class Yolo3(nn.Module):
         self.bb_convlayer_18 = ConvLayer(256, 128, 1, pad=0, pool=False)
 
         self.dt3_convlayer_1 = ConvLayer(128, 256, pool=False)
-        self.detector3 = ConvLayer(256, 255, 1, pad=0, bn=False, act=False, pool=False)
+        self.detector3 = ConvLayer(256, predict_channel, 1, pad=0, bn=False, act=False, pool=False)
 
     def forward(self, x):
         x = self.bb_convlayer_1(x)
