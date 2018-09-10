@@ -85,6 +85,13 @@ class Yolo3(nn.Module):
         self.dt3_convlayer_1 = ConvLayer(128, 256, pool=False)
         self.detector3 = ConvLayer(256, predict_channel, 1, pad=0, bn=False, act=False, pool=False)
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='leaky_relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
     def forward(self, x):
         x = self.bb_convlayer_1(x)
         x_dt3 = self.bb_resblock_3(self.bb_resblock_2(self.bb_resblock_1(x)))
@@ -139,6 +146,13 @@ class Yolo3Tiny(nn.Module):
         self.dt2_convlayer_1 = ConvLayer(256, 128, 1, pad=0, pool=False)
         self.dt2_convlayer_2 = ConvLayer(384, 256, pool=False)
         self.detector2 =  ConvLayer(256, 255, 1, pad=0, bn=False, act=False, pool=False)
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='leaky_relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
         x = self.bb_convlayer_1(x)

@@ -128,6 +128,9 @@ if __name__ == '__main__':
 
     cv2.imwrite('test_util2.jpg', img)
 
+    grid_sizes=[13, 26, 52]
+    neg = [torch.Tensor([[(i % (grid_sizes[j] * 3)) % 3, i // (grid_sizes[j] * 3), (i % (grid_sizes[j] * 3)) // 3] for i, n in enumerate(ng) if not n]).type(torch.int64) for j, ng in enumerate(neg)]
 
-
-
+    print(neg[0])
+    print(neg[1])
+    print(neg[2])

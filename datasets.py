@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 import numpy as np
+from utils_train import *
 import cv2
 
 voc_classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
@@ -20,7 +21,7 @@ class PascalVosDataset(Dataset):
         image = cv2.imread(self.images[idx]) # BGR to RGB
         label = [x.strip().split(' ') for x in open(self.labels[idx]).readlines() if len(x) > 0]
         label_cls = np.array([int(x[0]) for x in label], dtype=np.int32)
-        label_bbx = np.array([[float(x) for x in lbl[1:]] for lbl in label])
+        label_bbx = np.array([[float(x) for x in lbl[1:]] for lbl in label])  # x1, y1, x2, y2
 
         sample = {'image': image, 'label': (label_cls, label_bbx)}
         if self.transform:
@@ -63,37 +64,6 @@ class Rescale:
         return sample
 
 
-class BottomRightPad:
-    """Pad the image in a sample.
-
-    Args:
-        output_size (tuple or int): Desired output size [h, w]. If tuple, output is matched to output_size. If int, smaller of image edges is matched to output_size keeping aspect ratio the same.
-        fill (int): Pixel fill value. Default is 0. 
-    """
-
-    def __init__(self, output_size, fill=0):
-        assert isinstance(output_size, (int, tuple))
-        assert isinstance(fill, int)
-        self.output_size = output_size
-        self.fill = fill
-
-    def __call__(self, sample):
-        image, label = sample['image'], sample['label']
-
-        h, w = image.shape[:2]
-        if isinstance(self.output_size, int):
-            h_new, w_new = self.output_size, self.output_size
-        else:
-            assert len(output_size) == 2
-            h_new, w_new = self.output_size
-
-        image_new = np.pad(image, ((0, h_new - h), (0, w_new - w), (0, 0)), 'constant', constant_values=self.fill)
-
-        sample = {'image': image_new, 'label': label}
-
-        return sample
-
-
 class RandomHorizontalFlip:
     """Horizontally flip the image in a sample randomly with a given probability.
 
@@ -127,6 +97,50 @@ class RandomHorizontalFlip:
 
         label_new = (label_cls, label_bbx)
         sample = {'image': image_new, 'label': label_new}
+
+        return sample
+
+
+class BottomRightPad:
+    """Pad the image in a sample.
+
+    Args:
+        output_size (tuple or int): Desired output size [h, w]. If tuple, output is matched to output_size. If int, smaller of image edges is matched to output_size keeping aspect ratio the same.
+        fill (int): Pixel fill value. Default is 0. 
+    """
+
+    def __init__(self, output_size, fill=0):
+        assert isinstance(output_size, (int, tuple))
+        assert isinstance(fill, int)
+        self.output_size = output_size
+        self.fill = fill
+
+    def __call__(self, sample):
+        image, label = sample['image'], sample['label']
+
+        h, w = image.shape[:2]
+        if isinstance(self.output_size, int):
+            h_new, w_new = self.output_size, self.output_size
+        else:
+            assert len(output_size) == 2
+            h_new, w_new = self.output_size
+
+        image_new = np.pad(image, ((0, h_new - h), (0, w_new - w), (0, 0)), 'constant', constant_values=self.fill)
+
+        sample = {'image': image_new, 'label': label}
+
+        return sample
+
+
+class ToTensor:
+    """Convert ndarrays in sample to Tensors."""
+
+    def __call__(self, sample):
+        image, label = sample['image'], sample['label']
+        image_new = image[:,:,::-1].transpose((2,0,1)) / 255.0
+        image_new = torch.from_numpy(image_new).float().unsqueeze(0)
+
+        sample = {'image': image_new, 'label': label}
 
         return sample
 
